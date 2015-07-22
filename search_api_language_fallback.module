@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * @file
+ * Provides language fallback integration for Search API.
+ */
+
+/**
+ * Implements hook_search_api_alter_callback_info_alter().
+ */
+function search_api_language_fallback_search_api_alter_callback_info_alter(array &$callbacks) {
+  $callbacks['search_api_alter_add_viewed_entity']['class'] = 'SearchApiAlterAddViewedEntityWithFallback';
+}
+
+/**
+ * Implements hook_node_view_alter().
+ */
+function search_api_language_fallback_node_view_alter(&$build) {
+
+  // Load all indexed that might be used for nodes.
+  $conditions = array(
+    'enabled' => 1,
+    'item_type' => 'search_api_et_node',
+    'read_only' => 0,
+  );
+  $indexes = search_api_index_load_multiple(FALSE, $conditions);
+  foreach ($indexes as $index) {
+    $callbacks = $index->getAlterCallbacks();
+    if (isset($callbacks['search_api_alter_add_viewed_entity'])) {
+      $callback = $callbacks['search_api_alter_add_viewed_entity'];
+      if ($callback instanceof SearchApiAlterAddViewedEntityWithFallback) {
+        if ($build['#view_mode'] == $callback->getViewMode()) {
+          // Unset links since we don't want to index them.
+          unset($build['links']);
+          return;
+        }
+      }
+    }
+  }
+}
