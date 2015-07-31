@@ -19,7 +19,10 @@ A Drupal module providing language fallback integration for Search API.
     - Item type: Multilingual Content
     - Languages to be included in the index: all site languages
     - Fields: Node ID, Author, Entity HTML output
-    - Filters: Complete entity view (set the prepared view mode); ensure that "HTML filter" is enabled for the "Entity HTML output"
+    - Filters: Complete entity view
+        - set the prepared view mode
+        - it's better to enable the "Exclude entities with empty title_field" option
+        - ensure that "HTML filter" is enabled for the "Entity HTML output"
 
 ## Known issues
 
